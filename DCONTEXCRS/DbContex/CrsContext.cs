@@ -1,18 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace DCONTEXCRS.DbContex;
 
 public partial class CrsContext : DbContext
 {
+    private readonly IConfiguration _configuration;
     public CrsContext()
     {
     }
 
-    public CrsContext(DbContextOptions<CrsContext> options)
+    public CrsContext(DbContextOptions<CrsContext> options, IConfiguration configuration)
         : base(options)
     {
+        this._configuration = configuration;
     }
 
     public virtual DbSet<Catalogo> Catalogos { get; set; }
@@ -46,7 +49,7 @@ public partial class CrsContext : DbContext
     public virtual DbSet<TablaSecuencium> TablaSecuencia { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Server=LAPTOP-3NFRODC1; Database=CRS;User Id=sa;Password=1234;TrustServerCertificate=True;");
+        => optionsBuilder.UseSqlServer(_configuration.GetConnectionString("DefaultConnection"));
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

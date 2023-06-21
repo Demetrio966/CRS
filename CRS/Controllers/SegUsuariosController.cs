@@ -1,4 +1,8 @@
-﻿using CRS.Models.Respuesta;
+﻿using CRS.Interfaces;
+using CRS.Models.Respuesta;
+using CRS.Utilitarios;
+//using DCONTEXCRS.DbContex;
+using DCONTEXCRS.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -6,57 +10,50 @@ namespace CRS.Controllers
 {
     public class SegUsuariosController : Controller
     {
+        private readonly IJwtClass _jwtClass;
+        private readonly ISegUsuariosDAL _segUsuarios;
+
+        public SegUsuariosController(IJwtClass jwtClass, ISegUsuariosDAL segUsuarios)
+        {
+            this._jwtClass = jwtClass;
+            this._segUsuarios = segUsuarios;
+        }
+
         Respuesta respuesta = new Respuesta();
         public IActionResult Index()
         {
             return View();
         }
 
-        //[HttpPost]
-        //[Route("api/login/Sesion")]
-        //public async Task<JsonResult> Sesion(string usuario, string contraseña)
-        //{
-            
-        //    //try
-        //    //{
-                
+        [HttpGet]
+        [Route("login")]
+        public async Task<dynamic> login(string usuario, string contraseña, string role)
+        {
+            var token = string.Empty;
+            bool login = false;
+            try
+            {
+                login = await _segUsuarios.Sesion(usuario, contraseña);
 
-        //    //    aperturaCaja.Id_empresa = idEmpresa;
-        //    //    aperturaCaja.Ususario_nombre = usuarioNombre;
-        //    //    aperturaCaja.Ususario_cedula = usuario;
-        //    //    aperturaCaja.Id_emision = 20;///adminitracion
-        //    //    respuesta = await _aperturaCaja.GrabarAperturaCaja(aperturaCaja);
+                if (login)
+                {
+                    token = _jwtClass.GenerateToken(usuario, role);
+                    respuesta.respuesta = "Correcto";
+                }
+                else
+                {
+                    token = "Usuario o clave incorrecta";
+                    respuesta.respuesta = "Incorrecto";
+                }
 
-        //    //    if (_resultado != null)
-        //    //    {
-        //    //        return Json(new
-        //    //        {
-        //    //            mensaje_control = respuesta.mensaje_control,
-        //    //            error = respuesta.error,
-        //    //            respuesta_1 = respuesta.respuesta_1
-
-        //    //        });
-        //    //    }
-        //    //    else
-        //    //    {
-        //    //        return Json(new
-        //    //        {
-        //    //            mensaje_control = "Erro al Grabar Apertura Caja",
-        //    //            error = TipoError.Error,
-        //    //        });
-        //    //    }
-        //    //}
-        //    //catch (Exception ex)
-        //    //{
-                
-
-        //    //    return Json(new
-        //    //    {
-        //    //        mensaje_control = ex.Message,
-        //    //        error = TipoError.Error,
-        //    //    });
-        //    //}
-        //}
+                respuesta.datos = token;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            return respuesta;
+        }
 
     }
 }

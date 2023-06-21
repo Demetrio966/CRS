@@ -1,14 +1,22 @@
-//using DCONTEXCRS.DbContex;
+using CRS.Interfaces;
+using CRS.Utilitarios;
+using DCONTEXCRS.DbContex;
+using DCONTEXCRS.Interfaces;
+using DCONTEXCRS.Services;
 using Microsoft.EntityFrameworkCore;
+using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddScoped<ISegUsuariosDAL,SegUsuariosServices>();
+builder.Services.AddScoped<IJwtClass, JwtClass>();
 
-//builder.Services.AddDbContext<AplicacionDbContext>(opciones => 
-//opciones.UseSqlServer("name=DefaultConnection"));
+
+builder.Services.AddDbContext<CrsContext>(opciones => 
+opciones.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
 var app = builder.Build();

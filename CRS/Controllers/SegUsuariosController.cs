@@ -26,7 +26,7 @@ namespace CRS.Controllers
         }
 
         [HttpGet]
-        [Route("login")]
+        [Route("SegUsuarios/login")]
         public async Task<dynamic> login(string usuario, string contraseña, string role)
         {
             var token = string.Empty;
@@ -38,10 +38,12 @@ namespace CRS.Controllers
                 if (login)
                 {
                     token = _jwtClass.GenerateToken(usuario, role);
+                    respuesta.codigo = 0;
                     respuesta.respuesta = "Correcto";
                 }
                 else
                 {
+                    respuesta.codigo = 1;
                     token = "Usuario o clave incorrecta";
                     respuesta.respuesta = "Incorrecto";
                 }
@@ -50,6 +52,8 @@ namespace CRS.Controllers
             }
             catch (Exception ex)
             {
+                respuesta.codigo = 2;
+                respuesta.respuesta = ex.Message;
                 throw new Exception(ex.Message);
             }
             return respuesta;

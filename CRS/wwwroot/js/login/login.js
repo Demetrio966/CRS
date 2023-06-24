@@ -9,6 +9,7 @@ boton.addEventListener("click", function () {
     var role = "admin"
     Logeo(usuario, contraseña, role);
 
+ 
 
 });
 
@@ -28,5 +29,9 @@ function Logeo(usuario, contraseña, role) {
     });
 }
 
-
+Swal.fire(
+    'The Internet?',
+    'That thing is still around?',
+    'question'
+)
 
